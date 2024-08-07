@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace：需要和对应AdminMapper接口的包名+名称一致-->
+<mapper namespace="com.fly.mapper.AdminMapper">
+    <!--    开启二级缓存-->
+    <cache></cache>
+<!--    Admin login(@Param("username") String username, @Param("password") String password);-->
+    <select id="login" parameterType="String" resultType="com.fly.bean.Admin">
+        select id,username, password,name
+        from admin
+        where username = #{username}
+        and password = #{password}
+    </select>
+<!--    Admin getById(@Param("id") int id);-->
+    <select id="getById" parameterType="java.lang.Integer" resultType="com.fly.bean.Admin">
+        select id,username, password,name
+        from admin
+        where id = #{id}
+    </select>
+
+    <!--    boolean updateAdmin(Admin admin);-->
+    <update id="updateAdmin" parameterType="com.fly.bean.Admin">
+        update admin
+        <set>
+            <if test="password != null and password.trim()!=''">
+                password = #{password},
+            </if>
+            <if test="name != null and name.trim()!=''">
+                name = #{name},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+</mapper>

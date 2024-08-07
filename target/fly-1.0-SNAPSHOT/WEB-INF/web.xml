@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
+         version="4.0">
+    <!--配置Spring的编码过滤器 请求编码 以及响应编码-->
+    <filter>
+        <filter-name>CharacterEncodingFilter</filter-name>
+        <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+        <init-param>
+            <param-name>encoding</param-name>
+            <param-value>UTF-8</param-value>
+        </init-param>
+        <init-param>
+            <param-name>forceEncoding</param-name>
+            <param-value>true</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>CharacterEncodingFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <!--配置处理请求方式的过滤器-->
+    <filter>
+        <filter-name>HiddenHttpMethodFilter</filter-name>
+        <filter-class>org.springframework.web.filter.HiddenHttpMethodFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>HiddenHttpMethodFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>*.css</url-pattern>
+        <url-pattern>*.js</url-pattern>
+        <url-pattern>*.gif</url-pattern>
+        <url-pattern>*.png</url-pattern>
+        <url-pattern>*.jpg</url-pattern>
+        <url-pattern>*.json</url-pattern>
+        <url-pattern>*.svgf</url-pattern>
+        <url-pattern>*.eot</url-pattern>
+        <url-pattern>*.ttf</url-pattern>
+        <url-pattern>*.woff</url-pattern>
+    </servlet-mapping>
+
+    <!--配置SpringMVC的前端控制器DispatcherServlet-->
+    <servlet>
+        <servlet-name>SpringMVC</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <!--设置SpringMVC配置文件自定义的位置和名称-->
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <!--   5.1创建这个文件在resources文件夹-->
+            <param-value>classpath:springmvc.xml</param-value>
+        </init-param>
+        <!--将DispatcherServlet的初始化时间提前到服务器启动时-->
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>SpringMVC</servlet-name>
+        <url-pattern>/</url-pattern>
+    </servlet-mapping>
+    <!--配置Spring的监听器，在服务器启动时加载Spring的配置文件-->
+    <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
+    <!--7设置Spring配置文件自定义的位置和名称-->
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <!--   7.1创建这个文件在resources文件夹-->
+        <param-value>classpath:spring.xml</param-value>
+    </context-param>
+
+    <!--异常处理404页面-->
+    <!--    <error-page>-->
+    <!--        <error-code>404</error-code>-->
+    <!--        <location>/WEB-INF/templates/fly_page_404.html</location>-->
+    <!--    </error-page>-->
+
+    <!-- 添加druid监控-->
+    <servlet>
+        <servlet-name>DruidStatView</servlet-name>
+        <servlet-class>com.alibaba.druid.support.http.StatViewServlet</servlet-class>
+        <init-param>
+            <param-name>loginUsername</param-name>
+            <param-value>admin</param-value>
+        </init-param>
+        <init-param>
+            <param-name>loginPassword</param-name>
+            <param-value>admin</param-value>
+        </init-param>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>DruidStatView</servlet-name>
+        <url-pattern>/druid/*</url-pattern>
+    </servlet-mapping>
+    <!-- 添加Web应用等监控-->
+    <filter>
+        <filter-name>DruidWebStatFilter</filter-name>
+        <filter-class>com.alibaba.druid.support.http.WebStatFilter</filter-class>
+        <init-param>
+            <param-name>exclusions</param-name>
+            <param-value>*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>DruidWebStatFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    <context-param>
+        <param-name>spring.profiles.active</param-name>
+        <param-value>dev</param-value>
+    </context-param>
+    <context-param>
+        <param-name>spring.profiles.default</param-name>
+        <param-value>dev</param-value>
+    </context-param>
+    <context-param>
+        <param-name>spring.liveBeansView.mbeanDomain</param-name>
+        <param-value>dev</param-value>
+    </context-param>
+
+    <welcome-file-list>
+        <welcome-file>/index</welcome-file>
+    </welcome-file-list>
+</web-app>

@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace：需要和对应AdminMapper接口的包名+名称一致-->
+<mapper namespace="com.fly.mapper.OrdersMapper">
+    <!--    开启二级缓存-->
+    <cache></cache>
+    <resultMap id="getResultMap" type="com.fly.bean.Orders">
+        <!--   <id />类id属性 表id字符映射     -->
+        <id property="oid" column="oid"/>
+        <result property="oname" column="oname"/>
+        <result property="idcard" column="idcard"/>
+        <result property="ophone" column="ophone"/>
+        <result property="nationality" column="nationality"/>
+        <result property="visa" column="visa"/>
+        <result property="price" column="price"/>
+        <result property="types" column="types"/>
+        <result property="dates" column="dates"/>
+        <result property="ostatus" column="ostatus"/>
+        <result property="start_date" column="start_date"/>
+        <result property="end_date" column="end_date"/>
+        <!--    集合字段映射-->
+        <!--     <collection property="":在信息类里的属性 ofType=""结果所属哪个类/>-->
+        <collection property="user" ofType="com.fly.bean.User">
+            <!--  下面就是直接写用户的类属性，和表字段就行-->
+            <id property="uid" column="uid"/>
+            <result property="username" column="username"/>
+            <result property="password" column="password"/>
+            <result property="name" column="name"/>
+            <result property="sex" column="sex"/>
+            <result property="age" column="age"/>
+            <result property="phone" column="phone"/>
+            <result property="address" column="address"/>
+            <result property="card" column="card"/>
+            <result property="vip" column="vip"/>
+            <result property="status" column="status"/>
+            <result property="integral" column="integral"/>
+        </collection>
+        <collection property="fly" ofType="com.fly.bean.Fly">
+            <!--  下面就是直接写用户的类属性，和表字段就行-->
+            <id property="fid" column="fid"/>
+            <result property="fly_name" column="fly_name"/>
+            <result property="fly_card" column="fly_card"/>
+            <result property="type" column="type"/>
+            <result property="start_city" column="start_city"/>
+            <result property="end_city" column="end_city"/>
+            <result property="start_address" column="start_address"/>
+            <result property="end_address" column="end_address"/>
+            <result property="start_time" column="start_time"/>
+            <result property="end_time" column="end_time"/>
+            <result property="duration" column="duration"/>
+            <result property="business_old" column="business_old"/>
+            <result property="business_new" column="business_new"/>
+
+            <result property="economy_old" column="economy_old"/>
+            <result property="economy_new" column="economy_new"/>
+            <result property="eat" column="eat"/>
+            <result property="fly_status" column="fly_status"/>
+        </collection>
+    </resultMap>
+    <!--boolean add(Orders orders);-->
+    <insert id="add" parameterType="com.fly.bean.Orders">
+        insert into orders (oid, oname, idcard, ophone, nationality, visa, price, types, dates, ostatus, start_date, end_date, useridfk, fkyidfk)
+        values (#{oid}, #{oname}, #{idcard}, #{ophone}, #{nationality}, #{visa}, #{price}, #{types}, #{dates}, #{ostatus}, #{start_date}, #{end_date}, #{user.uid}, #{fly.fid})
+    </insert>
+<!--    Integer getCountByUser(@Param("uid") Integer uid);-->
+    <select id="getCountByUser" resultType="java.lang.Integer">
+        select count(1) from orders where useridfk = #{uid}
+    </select>
+<!--    List<Orders> getPageItemsByUser(@Param("begin")int begin,@Param("pageSize") int pageSize,@Param("uid") Integer uid);-->
+    <select id="getPageItemsByUser" resultMap="getResultMap">
+        select * from orders o,user u,fly f where o.useridfk = u.uid and o.fkyidfk = f.fid and o.useridfk = #{uid} order by o.dates desc limit #{begin},#{pageSize}
+    </select>
+
+<!--    boolean delete(@Param("oid")String oid);-->
+    <delete id="delete">
+        delete from orders where oid = #{oid}
+    </delete>
+<!--    boolean updateStatus(@Param("oid")String oid,@Param("status") String status);-->
+    <update id="updateStatus" parameterType="java.lang.String">
+        update orders set ostatus = #{status} where oid = #{oid}
+    </update>
+<!--    Orders getById(@Param("oid")String oid);-->
+    <select id="getById" resultMap="getResultMap">
+        select * from orders o,user u,fly f where o.useridfk = u.uid and o.fkyidfk = f.fid and o.oid=#{oid}
+    </select>
+
+<!--    Integer getCount(@Param("condition")String condition);-->
+    <select id="getCount" resultType="java.lang.Integer">
+        select count(1) from orders
+        <trim prefix="WHERE" prefixOverrides="AND">
+            <!--<if test="employee_id != null and employee_id != 0"> 表示成立就后拼接，Integer类型要判断是否为0，字符串类型只判断!=null就行-->
+            <!--用完用了<where>标签 所以如果上面employee_id不成立 下面的 and 会自动去出 就不会出现sql变成(where and)这种情况 -->
+            <if test="condition != null and condition.trim()!=''">
+                ( oname like #{condition} or oid like #{condition} or ostatus like #{condition})
+            </if>
+        </trim>
+    </select>
+
+<!--    List<Orders> getPageItems(@Param("begin")int begin, @Param("pageSize")int pageSize, @Param("condition")String condition);-->
+    <select id="getPageItems" resultMap="getResultMap">
+        select * from orders o,user u,fly f
+        <trim prefix="WHERE" prefixOverrides="AND">
+            <!--<if test="employee_id != null and employee_id != 0"> 表示成立就后拼接，Integer类型要判断是否为0，字符串类型只判断!=null就行-->
+            <!--用完用了<where>标签 所以如果上面employee_id不成立 下面的 and 会自动去出 就不会出现sql变成(where and)这种情况 -->
+            <if test="condition != null and condition.trim()!=''">
+                ( oname like #{condition} or oid like #{condition} or ostatus like #{condition})
+            </if>
+            <if test="1==1">
+              and  o.useridfk = u.uid and o.fkyidfk = f.fid order by o.dates desc limit #{begin},#{pageSize}
+            </if>
+        </trim>
+    </select>
+</mapper>

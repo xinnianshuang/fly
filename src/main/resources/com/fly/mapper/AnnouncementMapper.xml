@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace：需要和对应AdminMapper接口的包名+名称一致-->
+<mapper namespace="com.fly.mapper.AnnouncementMapper">
+    <!--    开启二级缓存-->
+    <cache></cache>
+<!--    List<Announcement> getByMain();-->
+    <select id="getByMain" resultType="com.fly.bean.Announcement">
+        select aid,title,mark,dates from announcement order by dates desc limit 0,6
+    </select>
+<!--    Announcement getById(@Param("aid") Integer aid);-->
+    <select id="getById" parameterType="java.lang.Integer" resultType="com.fly.bean.Announcement">
+        select aid,title,mark,dates from announcement where aid = #{aid}
+    </select>
+
+<!--    Integer getCount();-->
+    <select id="getCount" resultType="java.lang.Integer">
+        select count(1) from announcement
+    </select>
+<!--    List<Announcement> getPageItems(@Param("begin")int begin,@Param("pageSize") int pageSize);-->
+    <select id="getPageItems" resultType="com.fly.bean.Announcement">
+        select * from announcement order by dates desc limit #{begin}, #{pageSize}
+    </select>
+
+    <!--    boolean delete(@Param("aid")Integer aid);-->
+    <delete id="delete">
+        delete from announcement where aid = #{aid}
+    </delete>
+    <!--    boolean update(Announcement announcement);-->
+    <update id="update" parameterType="com.fly.bean.Announcement">
+        update announcement
+        <set>
+            <if test="title != null and title.trim()!=''">
+                title = #{title},
+            </if>
+            <if test="mark != null and mark.trim()!=''">
+                mark = #{mark},
+            </if>
+        </set>
+            where aid = #{aid}
+    </update>
+
+
+
+    <!--    boolean add(Announcement announcement);-->
+    <insert id="add" parameterType="com.fly.bean.Announcement">
+        insert into announcement (title, mark, dates)
+        values (#{title}, #{mark}, #{dates})
+    </insert>
+</mapper>

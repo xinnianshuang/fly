@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+
+
+    <!--
+        MyBatis核心配置文件中的标签必须要按照指定的顺序配置：
+        properties?,settings?,typeAliases?,typeHandlers?,
+        objectFactory?,objectWrapperFactory?,reflectorFactory?,
+        plugins?,environments?,databaseIdProvider?,mappers?
+    -->
+    <!--   23全局配置参数，需要时再设置 -->
+    <settings>
+        <!-- 23.1mybatis日志-->
+        <setting name="logImpl" value="LOG4J"/>
+
+
+        <!-- 23.2打开延迟加载的开关 对于分步查询来说得 查询员工信息关联的部门信息会按需求加载 -->
+        <setting name="lazyLoadingEnabled" value="true"/>
+        <!-- 23.3将积极加载改成消极加载即系按需加载 默认值为false 建议写上 -->
+        <setting name="aggressiveLazyLoading" value="false"/>
+
+
+        <!-- 23.4二级缓存总开关 true表示开-->
+        <!-- 二级缓存默认是支持的，最好明文写出来，默认也是true
+        二级缓存是对应每一个命名空间的/每一个DAO接口，范围比一级大-->
+        <setting name="cacheEnabled" value="true"/>
+
+
+        <!-- 23.5开启驼峰命名 例如domain类有个属性叫 userName，数据库对应字段叫user_name
+             这样通过sql语句查询的结果中的带下划线字段 就可以映射上User类以驼峰命名的属性了，
+             但是不可以写成 select * from user where userName=#{userName}
+             要写成这样：   select * from user where user_name=#{userName}
+             -->
+<!--        <setting name="mapUnderscoreToCamelCase" value="true"/>-->
+
+
+    </settings>
+
+<!---->
+
+</configuration>

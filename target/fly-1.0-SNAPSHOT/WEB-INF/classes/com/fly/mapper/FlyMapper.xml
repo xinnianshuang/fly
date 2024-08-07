@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace：需要和对应AdminMapper接口的包名+名称一致-->
+<mapper namespace="com.fly.mapper.FlyMapper">
+    <!--    开启二级缓存-->
+    <cache></cache>
+<!--     List<Fly> getByMain();-->
+    <select id="getByMain"  resultType="com.fly.bean.Fly">
+        select fid, fly_name,fly_card,type,start_city,end_city,start_address, end_address,
+            start_time,end_time, duration,business_old, business_new,economy_old, economy_new,eat,fly_status
+        from fly where fly_status = '启用' order by fid desc limit 0,30
+    </select>
+<!--    List<Fly> getByCondition(@Param("start_city") String start_city, @Param("end_city")String end_city,@Param("time") String time);-->
+    <select id="getByCondition"  resultType="com.fly.bean.Fly">
+        select fid, fly_name,fly_card,type,start_city,end_city,start_address, end_address,
+               start_time,end_time, duration,business_old, business_new,economy_old, economy_new,eat,fly_status
+        from fly where fly_status = '启用' and ( start_city like #{start_city} or start_address like #{start_city}) and (end_city like #{end_city} or end_address like #{end_city})
+        <if test="time != null">
+            and start_time > #{time}
+        </if>
+    </select>
+<!--    Fly getById(@Param("fid")Integer fid);-->
+    <select id="getById"  resultType="com.fly.bean.Fly">
+        select fid, fly_name,fly_card,type,start_city,end_city,start_address, end_address,
+               start_time,end_time, duration,business_old, business_new,economy_old, economy_new,eat,fly_status
+        from fly where fid = #{fid}
+    </select>
+
+
+<!--    Integer getCount(@Param("condition")String condition);-->
+    <select id="getCount" parameterType="java.lang.String" resultType="java.lang.Integer">
+        select count(1) from fly
+        <trim prefix="WHERE" prefixOverrides="AND">
+            <!--<if test="employee_id != null and employee_id != 0"> 表示成立就后拼接，Integer类型要判断是否为0，字符串类型只判断!=null就行-->
+            <!--用完用了<where>标签 所以如果上面employee_id不成立 下面的 and 会自动去出 就不会出现sql变成(where and)这种情况 -->
+            <if test="condition != null and condition.trim()!=''">
+                ( fly_card like #{condition} or type like #{condition} or start_address like #{condition} or end_address like #{condition})
+            </if>
+        </trim>
+    </select>
+
+
+<!--    List<User> getPageItems(@Param("begin")int begin,@Param("pageSize") int pageSize, @Param("condition")String condition);-->
+    <select id="getPageItems"  resultType="com.fly.bean.Fly">
+        select * from fly
+        <trim prefix="WHERE" prefixOverrides="AND">
+            <!--<if test="employee_id != null and employee_id != 0"> 表示成立就后拼接，Integer类型要判断是否为0，字符串类型只判断!=null就行-->
+            <!--用完用了<where>标签 所以如果上面employee_id不成立 下面的 and 会自动去出 就不会出现sql变成(where and)这种情况 -->
+            <if test="condition != null and condition.trim()!=''">
+                ( fly_card like #{condition} or type like #{condition} or start_address like #{condition} or end_address like #{condition})
+            </if>
+        </trim>
+        order by fid desc limit #{begin}, #{pageSize}
+    </select>
+
+
+<!--    boolean update(Fly fly);-->
+    <update id="update" parameterType="com.fly.bean.Fly">
+        update fly
+        <set>
+            <if test="fly_name != null and fly_name.trim()!=''">
+                fly_name = #{fly_name},
+            </if>
+            <if test="fly_card != null and fly_card.trim()!=''">
+                fly_card = #{fly_card},
+            </if>
+            <if test="type != null and type.trim()!=''">
+                type = #{type},
+            </if>
+            <if test="start_city != null and start_city.trim()!=''">
+                start_city = #{start_city},
+            </if>
+            <if test="end_city != null and end_city.trim()!=''">
+                end_city = #{end_city},
+            </if>
+
+            <if test="start_address != null and start_address.trim()!=''">
+                start_address = #{start_address},
+            </if>
+            <if test="end_address != null and end_address.trim()!=''">
+                end_address = #{end_address},
+            </if>
+            <if test="start_time != null and start_time.trim()!=''">
+                start_time = #{start_time},
+            </if>
+            <if test="end_time != null and end_time.trim()!=''">
+                end_time = #{end_time},
+            </if>
+            <if test="duration != null and duration.trim()!=''">
+                duration = #{duration},
+            </if>
+
+            <if test="eat != null and eat.trim()!=''">
+                eat = #{eat},
+            </if>
+            <if test="fly_status != null and fly_status.trim()!=''">
+                fly_status = #{fly_status},
+            </if>
+
+            <if test="business_old != null and business_old!=0">
+                business_old = #{business_old},
+            </if>
+
+            <if test="business_new != null and business_new!=0">
+                business_new = #{business_new},
+            </if>
+            <if test="economy_old != null and economy_old!=0">
+                economy_old = #{economy_old},
+            </if>
+
+            <if test="economy_new != null and economy_new!=0">
+                economy_new = #{economy_new},
+            </if>
+        </set>
+        where fid = #{fid}
+    </update>
+<!--    boolean add(Fly fly);-->
+    <insert id="add" parameterType="com.fly.bean.Fly">
+        insert into fly (fly_name,fly_card,type,start_city,end_city,start_address, end_address,
+                          start_time,end_time, duration,business_old, business_new,economy_old, economy_new,eat,fly_status)
+        values (#{fly_name}, #{fly_card}, #{type}, #{start_city}, #{end_city}, #{start_address}, #{end_address}, #{start_time}, #{end_time}, #{duration}, #{business_old}, #{business_new}, #{economy_old}, #{economy_new}, #{eat}, #{fly_status})
+    </insert>
+<!--    boolean delete(@Param("fid")Integer fid);-->
+    <delete id="delete">
+        delete from fly where fid = #{fid}
+    </delete>
+</mapper>

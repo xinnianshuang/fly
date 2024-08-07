@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace：需要和对应AdminMapper接口的包名+名称一致-->
+<mapper namespace="com.fly.mapper.MsgMapper">
+    <!--    开启二级缓存-->
+    <cache></cache>
+
+
+    <!--   boolean add(Msg msg);-->
+    <insert id="add" parameterType="com.fly.bean.Msg">
+        insert into msg ( name, phone, num, mark, times, dates)
+        values (#{name}, #{phone}, #{num}, #{mark}, #{times}, #{dates})
+    </insert>
+
+
+<!--    Integer getCount(@Param("condition") String condition);-->
+    <select id="getCount" parameterType="java.lang.String" resultType="java.lang.Integer">
+        select count(1) from msg
+        <trim prefix="WHERE" prefixOverrides="AND">
+            <!--<if test="employee_id != null and employee_id != 0"> 表示成立就后拼接，Integer类型要判断是否为0，字符串类型只判断!=null就行-->
+            <!--用完用了<where>标签 所以如果上面employee_id不成立 下面的 and 会自动去出 就不会出现sql变成(where and)这种情况 -->
+            <if test="condition != null and condition.trim()!=''">
+                ( name like #{condition} or phone like #{condition}  or num like #{condition})
+            </if>
+        </trim>
+    </select>
+
+<!--    List<Msg> getPageItems(@Param("begin")int begin,@Param("pageSize") int pageSize,@Param("condition") String condition);-->
+    <select id="getPageItems"  resultType="com.fly.bean.Msg">
+        select * from msg
+        <trim prefix="WHERE" prefixOverrides="AND">
+            <!--<if test="employee_id != null and employee_id != 0"> 表示成立就后拼接，Integer类型要判断是否为0，字符串类型只判断!=null就行-->
+            <!--用完用了<where>标签 所以如果上面employee_id不成立 下面的 and 会自动去出 就不会出现sql变成(where and)这种情况 -->
+            <if test="condition != null and condition.trim()!=''">
+                ( name like #{condition} or phone like #{condition}  or num like #{condition})
+            </if>
+        </trim>
+        <if test="1==1">
+            order by dates desc limit #{begin}, #{pageSize}
+        </if>
+    </select>
+<!--    boolean delete(@Param("mid")Integer mid);-->
+    <delete id="delete">
+        delete from msg where mid = #{mid}
+    </delete>
+<!--    Msg getById(@Param("mid")Integer mid);-->
+    <select id="getById"  resultType="com.fly.bean.Msg">
+        select * from msg where mid = #{mid}
+    </select>
+
+</mapper>

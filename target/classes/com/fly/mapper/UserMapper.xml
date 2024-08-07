@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace：需要和对应UserMapper接口的包名+名称一致-->
+<mapper namespace="com.fly.mapper.UserMapper">
+
+
+
+    <!--    User login(@Param("username") String username, @Param("password") String password);-->
+    <select id="login" parameterType="String" resultType="com.fly.bean.User">
+        select uid, username, password, name, phone, sex, age, address, card, vip, status, integral
+        from user
+        where username = #{username}
+        and password = #{password}
+    </select>
+
+
+<!--    Integer getCount(@Param("condition")String condition);-->
+    <select id="getCount" parameterType="java.lang.String" resultType="java.lang.Integer">
+        select count(1) from user
+        <trim prefix="WHERE" prefixOverrides="AND">
+            <!--<if test="employee_id != null and employee_id != 0"> 表示成立就后拼接，Integer类型要判断是否为0，字符串类型只判断!=null就行-->
+            <!--用完用了<where>标签 所以如果上面employee_id不成立 下面的 and 会自动去出 就不会出现sql变成(where and)这种情况 -->
+            <if test="condition != null and condition.trim()!=''">
+                ( name like #{condition} or username like #{condition})
+            </if>
+        </trim>
+    </select>
+
+<!--    List<User> getPageItems(@Param("begin") int begin,@Param("pageSize")  int pageSize,@Param("condition") String condition);-->
+    <select id="getPageItems"  resultType="com.fly.bean.User">
+        select uid,username, password, name, phone, sex, age, address, card, vip, status, integral
+        from user
+        <trim prefix="WHERE" prefixOverrides="AND">
+            <!--<if test="employee_id != null and employee_id != 0"> 表示成立就后拼接，Integer类型要判断是否为0，字符串类型只判断!=null就行-->
+            <!--用完用了<where>标签 所以如果上面employee_id不成立 下面的 and 会自动去出 就不会出现sql变成(where and)这种情况 -->
+            <if test="condition != null and condition.trim()!=''">
+                ( name like #{condition} or username like #{condition})
+            </if>
+        </trim>
+        <if test="1==1">
+            order by uid asc limit #{begin}, #{pageSize}
+        </if>
+    </select>
+
+
+<!--     boolean add(User user);-->
+    <insert id="add" parameterType="com.fly.bean.User">
+        insert into user (username, password, name, phone, sex, age, address, card, vip, status, integral)
+        values (#{username}, #{password}, #{name}, #{phone}, #{sex}, #{age}, #{address}, #{card}, #{vip}, #{status}, #{integral})
+    </insert>
+
+<!--    User getById(@Param("uid") int uid);-->
+    <select id="getById"  resultType="com.fly.bean.User">
+        select uid, username, password, name, phone, sex, age, address, card, vip, status, integral
+        from user
+        where uid = #{uid}
+    </select>
+
+<!--    boolean update(User user);-->
+    <update id="update" parameterType="com.fly.bean.User">
+        update user
+        <set>
+            <if test="username != null and username.trim()!=''">
+                username = #{username},
+            </if>
+            <if test="password != null and password.trim()!=''">
+                password = #{password},
+            </if>
+            <if test="name != null and name.trim()!=''">
+                name = #{name},
+            </if>
+            <if test="sex != null and sex.trim()!=''">
+                sex = #{sex},
+            </if>
+            <if test="phone != null and phone.trim()!=''">
+                phone = #{phone},
+            </if>
+
+            <if test="address != null and address.trim()!=''">
+                address = #{address},
+            </if>
+
+            <if test="card != null and card.trim()!=''">
+                card = #{card},
+            </if>
+            <if test="age != null and age!=0">
+                age = #{age},
+            </if>
+            <if test="status != null and status.trim()!=''">
+                status = #{status},
+            </if>
+            <if test="integral != null and integral!=0">
+                integral = #{integral},
+            </if>
+            <if test="vip != null and vip.trim()!=''">
+                vip = #{vip},
+            </if>
+        </set>
+            where uid = #{uid}
+    </update>
+
+<!--   boolean delete(@Param("uid")Integer uid);-->
+    <delete id="delete">
+        delete from user where uid = #{uid}
+    </delete>
+<!--    Integer getUserByVIP(@Param("vip") String vip);-->
+    <select id="getUserByVIP" parameterType="java.lang.String" resultType="java.lang.Integer">
+        select count(1) from user where vip = #{vip}
+    </select>
+
+</mapper>
